@@ -13,13 +13,13 @@ from .utils import utils
 @app.route('/news')
 def news():
     news = posts.find().sort("date_posted", DESCENDING)
-    return jsonify(news, 200)
+    return json.loads(json_util.dumps(news))
 
 
 @app.route('/news/<slug>')
 def news_detail(slug):
     news = db.posts.find_one({'slug': slug})
-    return jsonify(news, 200)
+    return json.loads(json_util.dumps(news))
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -70,7 +70,7 @@ def register_user():
         if flash_message:
             flash(flash_message, category=flash_category)
 
-        return jsonify({'message': flash_message, 'category': flash_category}, 200)
+        return jsonify({'message': error, 'category': 'danger'}, 400)
 
 
 @app.route('/login', methods=['POST'])
