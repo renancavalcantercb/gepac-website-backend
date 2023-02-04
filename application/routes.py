@@ -125,7 +125,7 @@ def admin():
         users_with_roles.append(user)
 
     for stundent in stundents:
-        stundent['course'] = course_map.get(stundent['course'], 'Desconhecido')
+        stundent['course'] = course_map.get(stundent['course'], 'Nenhum')
         students_courses.append(stundent)
 
     return json.loads(json_util.dumps({'users': users_with_roles, 'students': students_courses, 'posts': posts}))
