@@ -164,12 +164,22 @@ def create_user():
 @app.route('/subscribed/admin/<user_id>/edit', methods=['POST'])
 def edit_subscribed(user_id):
     if request.method == 'POST':
-        name = request.form['name']
-        email = request.form['email']
-        cpf = request.form['cpf']
-        birthdate = request.form['birthdate']
-        phone = request.form['phone']
-        course = request.form['course']
+        student_info = db.stundents.find_one({'_id': ObjectId(user_id)})
+
+        if student_info['name'] != request.form['name']:
+            student_info['name'] = request.form['name']
+
+        if student_info['email'] != request.form['email']:
+            student_info['email'] = request.form['email']
+
+        if student_info['birthdate'] != request.form['birthdate']:
+            student_info['birthdate'] = request.form['birthdate']
+
+        if student_info['phone'] != request.form['phone']:
+            student_info['phone'] = request.form['phone']
+
+        if student_info['course'] != request.form['course']:
+            student_info['course'] = request.form['course']
 
         error = None
         flash_message = None
@@ -177,10 +187,8 @@ def edit_subscribed(user_id):
 
         if error is None:
             try:
-                db.stundents.update_one({'_id': ObjectId(user_id)}, {'$set': {'name': name, 'email': email, 'cpf': cpf,
-                                                                              'birthdate': birthdate, 'phone': phone,
-                                                                              'course': course}})
-                flash_message = f'Usuário {email} atualizado com sucesso!'
+                db.stundents.update_one({'_id': user_id}, {'$set': student_info})
+                flash_message = f'Usuário {student_info["email"]} atualizado com sucesso!'
                 flash_category = 'success'
                 return jsonify({'message': flash_message, 'category': flash_category}, 200)
             except Exception as e:
@@ -194,7 +202,6 @@ def edit_subscribed(user_id):
         return jsonify({'message': error, 'category': 'danger'}, 400)
 
 
-@app.route('/subscribed/admin/<user_id>/delete', methods=['POST'])
 def delete_subscribed(user_id):
     if request.method == 'POST':
         try:
