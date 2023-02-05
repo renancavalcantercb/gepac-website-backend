@@ -133,36 +133,82 @@ def admin():
 
 @app.route('/user/admin/create', methods=['POST'])
 def create_user():
-    if session['admin']:
-        email = request.form['email']
-        password = request.form['password']
-        confirm_password = request.form['confirm_password']
-        role = request.form['role']
-        admin = True if role == 'admin' else False
-        error = None
+    email = request.form['email']
+    password = request.form['password']
+    confirm_password = request.form['confirm_password']
+    role = request.form['role']
+    admin = True if role == 'admin' else False
+    error = None
 
-        if not email:
-            error = 'Email is required.'
-            return jsonify({'message': error, 'category': 'danger'}, 400)
-        elif not password:
-            error = 'Password is required.'
-            return jsonify({'message': error, 'category': 'danger'}, 400)
-        elif password != confirm_password:
-            error = 'Passwords do not match.'
-            return jsonify({'message': error, 'category': 'danger'}, 400)
+    if not email:
+        error = 'Email is required.'
+        return jsonify({'message': error, 'category': 'danger'}, 400)
+    elif not password:
+        error = 'Password is required.'
+        return jsonify({'message': error, 'category': 'danger'}, 400)
+    elif password != confirm_password:
+        error = 'Passwords do not match.'
+        return jsonify({'message': error, 'category': 'danger'}, 400)
+
+    if error is None:
+        try:
+            db.users.insert_one({'email': email, 'password': generate_password_hash(password), 'admin': admin})
+        except Exception as e:
+            error = f"Error occured: {e}"
+            flash(error)
+        else:
+            flash(f'User {email} was successfully registered!', category='success')
+            return jsonify({'message': 'Usuário criado com sucesso!', 'category': 'success'}, 200)
+
+
+@app.route('/subscribed/admin/<user_id>/edit', methods=['POST'])
+def edit_subscribed(user_id):
+    if request.method == 'POST':
+        name = request.form['name']
+        email = request.form['email']
+        cpf = request.form['cpf']
+        birthdate = request.form['birthdate']
+        phone = request.form['phone']
+        course = request.form['course']
+
+        error = None
+        flash_message = None
+        flash_category = None
 
         if error is None:
             try:
-                db.users.insert_one({'email': email, 'password': generate_password_hash(password), 'admin': admin})
+                db.stundents.update_one({'_id': ObjectId(user_id)}, {'$set': {'name': name, 'email': email, 'cpf': cpf,
+                                                                              'birthdate': birthdate, 'phone': phone,
+                                                                              'course': course}})
+                flash_message = f'Usuário {email} atualizado com sucesso!'
+                flash_category = 'success'
+                return jsonify({'message': flash_message, 'category': flash_category}, 200)
             except Exception as e:
                 error = f"Error occured: {e}"
-                flash(error)
-            else:
-                flash(f'User {email} was successfully registered!', category='success')
-                return jsonify({'message': 'Usuário criado com sucesso!', 'category': 'success'}, 200)
+
+        if error:
+            flash(error, category='danger')
+        if flash_message:
+            flash(flash_message, category=flash_category)
+
+        return jsonify({'message': error, 'category': 'danger'}, 400)
 
 
-@app.route('/user/admin/<user_id>/edit', methods=['GET', 'POST'])
+@app.route('/subscribed/admin/<user_id>/delete', methods=['POST'])
+def delete_subscribed(user_id):
+    if request.method == 'POST':
+        try:
+            db.stundents.delete_one({'_id': ObjectId(user_id)})
+            flash_message = 'Inscrição excluída com sucesso!'
+            flash_category = 'success'
+            return jsonify({'message': flash_message, 'category': flash_category}, 200)
+        except Exception as e:
+            error = f"Error occured: {e}"
+            flash(error)
+            return jsonify({'message': error, 'category': 'danger'}, 400)
+
+
+@app.route('/user/admin/<user_id>/edit', methods=['POST'])
 def edit_user(user_id):
     if request.method == 'POST':
         user = db.users.find_one({'_id': ObjectId(user_id)})
