@@ -132,8 +132,6 @@ def admin():
 
 
 @app.route('/user/admin/create', methods=['POST'])
-@utils.login_required
-@utils.is_admin
 def create_user():
     if session['admin']:
         email = request.form['email']
@@ -165,8 +163,6 @@ def create_user():
 
 
 @app.route('/user/admin/<user_id>/edit', methods=['GET', 'POST'])
-@utils.login_required
-@utils.is_admin
 def edit_user(user_id):
     if request.method == 'POST':
         user = db.users.find_one({'_id': ObjectId(user_id)})
@@ -182,16 +178,12 @@ def edit_user(user_id):
 
 
 @app.route('/user/admin/<user_id>/delete')
-@utils.login_required
-@utils.is_admin
 def delete_user(user_id):
     db.users.delete_one({'_id': ObjectId(user_id)})
     return jsonify({'message': 'Usuário deletado com sucesso!', 'category': 'success'}, 200)
 
 
 @app.route('/add-news', methods=['GET', 'POST'])
-@utils.login_required
-@utils.is_admin
 def add_news():
     if request.method == 'POST':
         id = utils.generate_id()
@@ -226,8 +218,6 @@ def add_news():
 
 
 @app.route('/news/<post_id>/edit', methods=['GET', 'POST'])
-@utils.login_required
-@utils.is_admin
 def edit_news(post_id):
     if request.method == 'POST':
         news = db.posts.find_one({'_id': post_id})
@@ -248,8 +238,6 @@ def edit_news(post_id):
 
 
 @app.route('/news/<post_id>/delete')
-@utils.login_required
-@utils.is_admin
 def delete_news(post_id):
     db.posts.delete_one({'_id': post_id})
     return jsonify({'message': 'Post deletado com sucesso!', 'category': 'success'}, 200)
