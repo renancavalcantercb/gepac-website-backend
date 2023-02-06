@@ -216,17 +216,18 @@ def delete_subscribed(user_id):
             return jsonify({'message': error, 'category': 'danger'}, 400)
 
 
-@app.route('/subscribed/admin/search?q=<search>', methods=['GET'])
+@app.route('/subscribed/admin/search=<search_term>')
 def search_subs(search_term):
     if request.method == 'GET':
-        students = db.stundents.find()
-        students_list = []
-
-        for student in students:
-            if search_term in student['name'] or search_term in student['email'] or search_term in student['course']:
-                students_list.append(student)
-
-        return json.loads(json_util.dumps(students_list))
+        try:
+            students = db.stundents.find({'$or': [{'name': {'$regex': search_term, '$options': 'i'}},
+                                                  {'email': {'$regex': search_term, '$options': 'i'}},
+                                                  {'course': {'$regex': search_term, '$options': 'i'}}]})
+            return json.loads(json_util.dumps({'students': students}))
+        except Exception as e:
+            error = f"Error occured: {e}"
+            flash(error)
+            return jsonify({'message': error, 'category': 'danger'}, 400)
 
 
 @app.route('/user/admin/<user_id>/edit', methods=['POST'])
