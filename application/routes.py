@@ -187,7 +187,7 @@ def edit_subscribed(user_id):
 
         if error is None:
             try:
-                db.stundents.update_one({'_id': user_id}, {'$set': student_info})
+                db.stundents.update_one({'_id': ObjectId(user_id)}, {'$set': student_info})
                 flash_message = f'Usuário {student_info["email"]} atualizado com sucesso!'
                 flash_category = 'success'
                 return jsonify({'message': flash_message, 'category': flash_category}, 200)
