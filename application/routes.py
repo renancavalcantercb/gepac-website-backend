@@ -216,7 +216,7 @@ def delete_subscribed(user_id):
             return jsonify({'message': error, 'category': 'danger'}, 400)
 
 
-@app.route('/subscribed/admin/search?=<search>', methods=['GET'])
+@app.route('/subscribed/admin/search?q=<search>', methods=['GET'])
 def search_subs(search_term):
     if request.method == 'GET':
         students = db.stundents.find()
