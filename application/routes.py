@@ -202,6 +202,7 @@ def edit_subscribed(user_id):
         return jsonify({'message': error, 'category': 'danger'}, 400)
 
 
+@app.route('/subscribed/admin/<user_id>/delete', methods=['POST'])
 def delete_subscribed(user_id):
     if request.method == 'POST':
         try:
