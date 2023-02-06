@@ -216,6 +216,19 @@ def delete_subscribed(user_id):
             return jsonify({'message': error, 'category': 'danger'}, 400)
 
 
+@app.route('/subscribed/admin/search?=<search>', methods=['GET'])
+def search_subs(search_term):
+    if request.method == 'GET':
+        students = db.stundents.find()
+        students_list = []
+
+        for student in students:
+            if search_term in student['name'] or search_term in student['email'] or search_term in student['course']:
+                students_list.append(student)
+
+        return json.loads(json_util.dumps(students_list))
+
+
 @app.route('/user/admin/<user_id>/edit', methods=['POST'])
 def edit_user(user_id):
     if request.method == 'POST':
