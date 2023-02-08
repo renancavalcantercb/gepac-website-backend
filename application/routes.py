@@ -140,10 +140,6 @@ def create_user():
     admin = True if role == 'admin' else False
     error = None
 
-    if db.users.find({'email': email}) is not None:
-        error = f'{email} já cadastrado.'
-        return jsonify({'message': error, 'category': 'danger'}, 400)
-
     if password != confirm_password:
         error = 'As senhas não conferem'
         return jsonify({'message': error, 'category': 'danger'}, 400)
