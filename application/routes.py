@@ -299,7 +299,7 @@ def edit_news(post_id):
         return jsonify({'message': 'Post editado com sucesso!', 'category': 'success'}, 200)
 
 
-@app.route('/news/<post_id>/delete')
+@app.route('/news/<post_id>/delete', methods=['POST'])
 def delete_news(post_id):
     db.posts.delete_one({'_id': post_id})
     return jsonify({'message': 'Post deletado com sucesso!', 'category': 'success'}, 200)
