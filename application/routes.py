@@ -228,7 +228,6 @@ def search_subs(search_term):
 def edit_user(user_id):
     if request.method == 'POST':
         user = db.users.find_one({'_id': ObjectId(user_id)})
-
         if request.form['email'] != user['email']:
             user['email'] = request.form['email']
 
@@ -236,7 +235,7 @@ def edit_user(user_id):
             user['admin'] = request.form.get('admin', False)
 
         db.users.update_one({'_id': ObjectId(user_id)}, {'$set': user})
-        return redirect(url_for('admin'))
+        return jsonify({'message': 'Usuário atualizado com sucesso!', 'category': 'success'}, 200)
 
 
 @app.route('/user/admin/<user_id>/delete', methods=['POST'])
