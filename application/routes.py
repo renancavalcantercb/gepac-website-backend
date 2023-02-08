@@ -140,14 +140,12 @@ def create_user():
     admin = True if role == 'admin' else False
     error = None
 
-    if not email:
-        error = 'Email is required.'
+    if db.users.find({'email': email}).count() > 0:
+        error = f'{email} já cadastrado.'
         return jsonify({'message': error, 'category': 'danger'}, 400)
-    elif not password:
-        error = 'Password is required.'
-        return jsonify({'message': error, 'category': 'danger'}, 400)
-    elif password != confirm_password:
-        error = 'Passwords do not match.'
+
+    if password != confirm_password:
+        error = 'As senhas não conferem'
         return jsonify({'message': error, 'category': 'danger'}, 400)
 
     if error is None:
