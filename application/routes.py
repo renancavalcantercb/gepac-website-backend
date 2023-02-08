@@ -243,7 +243,7 @@ def edit_user(user_id):
         return redirect(url_for('admin'))
 
 
-@app.route('/user/admin/<user_id>/delete')
+@app.route('/user/admin/<user_id>/delete', methods=['POST'])
 def delete_user(user_id):
     db.users.delete_one({'_id': ObjectId(user_id)})
     return jsonify({'message': 'Usuário deletado com sucesso!', 'category': 'success'}, 200)
