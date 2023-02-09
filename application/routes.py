@@ -244,7 +244,7 @@ def delete_user(user_id):
     return jsonify({'message': 'Usuário deletado com sucesso!', 'category': 'success'}, 200)
 
 
-@app.route('/add-news', methods=['GET', 'POST'])
+@app.route('/news/create', methods=['GET', 'POST'])
 def add_news():
     if request.method == 'POST':
         id = utils.generate_id()
