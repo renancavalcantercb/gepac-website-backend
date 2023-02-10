@@ -224,6 +224,34 @@ def search_subs(search_term):
             return jsonify({'message': error, 'category': 'danger'}, 400)
 
 
+@app.route('/user/admin/search=<search_term>')
+def search_users(search_term):
+    if request.method == 'GET':
+        try:
+            users = db.users.find({'$or': [{'name': {'$regex': search_term, '$options': 'i'}},
+                                           {'email': {'$regex': search_term, '$options': 'i'}},
+                                           {'admin': {'$regex': search_term, '$options': 'i'}}]})
+            return json.loads(json_util.dumps({'users': users}))
+        except Exception as e:
+            error = f"Error occured: {e}"
+            flash(error)
+            return jsonify({'message': error, 'category': 'danger'}, 400)
+
+
+@app.route('/news/search=<search_term>')
+def search_posts(search_term):
+    if request.method == 'GET':
+        try:
+            posts = db.posts.find({'$or': [{'title': {'$regex': search_term, '$options': 'i'}},
+                                           {'content': {'$regex': search_term, '$options': 'i'}},
+                                           {'author': {'$regex': search_term, '$options': 'i'}}]})
+            return json.loads(json_util.dumps({'posts': posts}))
+        except Exception as e:
+            error = f"Error occured: {e}"
+            flash(error)
+            return jsonify({'message': error, 'category': 'danger'}, 400)
+
+
 @app.route('/user/admin/<user_id>/edit', methods=['POST'])
 def edit_user(user_id):
     if request.method == 'POST':
