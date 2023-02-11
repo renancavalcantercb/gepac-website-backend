@@ -87,10 +87,9 @@ def login():
 
         if error is None:
             if check_password_hash(user['password'], password):
-                print(user)
                 session['logged_in'] = True
-                session['user_name'] = user['name']
-                session['user_email'] = user['email']
+                session['name'] = user['name']
+                session['admin'] = user['admin']
 
                 payload = {
                     'name': user['name'],
@@ -336,6 +335,8 @@ def delete_news(post_id):
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
     session['logged_in'] = False
+    session['email'] = None
+    session['name'] = None
     session.clear()
     return jsonify({'message': 'Logout realizado com sucesso!', 'category': 'success'}, 200)
 
