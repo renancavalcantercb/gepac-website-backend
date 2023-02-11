@@ -87,7 +87,10 @@ def login():
 
         if error is None:
             if check_password_hash(user['password'], password):
+                print(user)
                 session['logged_in'] = True
+                session['user_name'] = user['name']
+                session['user_email'] = user['email']
 
                 payload = {
                     'name': user['name'],
