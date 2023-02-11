@@ -92,6 +92,7 @@ def login():
                 session['admin'] = user['admin']
 
                 payload = {
+                    'id': user['_id'],
                     'name': user['name'],
                     'email': user['email'],
                     'admin': user['admin']
