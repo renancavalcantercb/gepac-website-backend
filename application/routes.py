@@ -156,7 +156,7 @@ def create_user():
             return jsonify({'message': 'Usuário criado com sucesso!', 'category': 'success'}, 200)
 
 
-@app.route('/susbcrribed/admin/<user_id/view', methods=['GET'])
+@app.route('/subscribed/admin/<user_id/view', methods=['GET'])
 def view_susbcribed(user_id):
     if request.method == 'GET':
         student_info = db.stundents.find_one({'_id': ObjectId(user_id)})
