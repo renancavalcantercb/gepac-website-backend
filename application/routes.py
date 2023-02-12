@@ -159,7 +159,6 @@ def create_user():
 @app.route('/subscribed/admin/<user_id>/view', methods=['GET'])
 def view_susbcribed(user_id):
     if request.method == 'GET':
-        print(ObjectId(user_id))
         student_info = db.stundents.find_one({'_id': ObjectId(user_id)})
         if student_info is None:
             return jsonify({'message': 'Aluno não encontrado', 'category': 'danger'}, 404)
