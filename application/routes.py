@@ -299,6 +299,9 @@ def add_news():
 def like_news(post_id):
     if request.method == 'POST':
         student = db.students.find_one({'_id': ObjectId(request.form['student_id'])})
+        if student is None:
+            return jsonify({'message': 'Aluno não encontrado', 'category': 'danger'}, 400)
+
         if post_id not in student['liked_posts']:
             db.students.update_one({'_id': ObjectId(request.form['_oid'])}, {'$push': {'liked_posts': post_id}})
             db.posts.update_one({'_id': post_id}, {'$inc': {'likes': 1}})
