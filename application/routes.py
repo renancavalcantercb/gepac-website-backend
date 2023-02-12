@@ -33,6 +33,7 @@ def register_user():
         birthdate = request.form['birthdate']
         phone = request.form['phone']
         course = request.form['course']
+        liked_posts = []
 
         error = None
         flash_message = None
@@ -58,7 +59,7 @@ def register_user():
             try:
                 db.stundents.insert_one(
                     {'name': name, 'email': email, 'password': generate_password_hash(password), 'cpf': cpf,
-                     'birthdate': birthdate, 'phone': phone, 'course': course})
+                     'birthdate': birthdate, 'phone': phone, 'course': course, 'liked_posts': liked_posts})
                 flash_message = f'Usuário {email} cadastrado com sucesso!'
                 flash_category = 'success'
                 return jsonify({'message': flash_message, 'category': flash_category}, 200)
@@ -267,6 +268,8 @@ def add_news():
         slug = utils.slugify(title)
         author = request.form['author']
         date_posted = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        likes = 0
+        views = 0
 
         if title and content and author and date_posted:
             if db.news.find_one({'slug': slug}) or db.news.find_one({'title': title}):
@@ -281,6 +284,8 @@ def add_news():
                 'content': content,
                 'img_url': img_url,
                 'author': author,
+                'likes': likes,
+                'views': views,
                 'date_posted': date_posted
             })
             return jsonify({'message': 'Post criado com sucesso!', 'category': 'success'}, 200)
@@ -288,6 +293,28 @@ def add_news():
         flash('Please fill all fields')
         return jsonify({'message': 'Por favor, preencha todos os campos', 'category': 'danger'}, 400)
     return jsonify({'message': 'Método não permitido', 'category': 'danger'}, 405)
+
+
+@app.route('/news/<post_id>/like', methods=['POST'])
+def like_news(post_id):
+    if request.method == 'POST':
+        student = db.students.find_one({'_id': ObjectId(request.form['_oid'])})
+        if post_id in student['liked_posts']:
+            db.students.update_one({'_id': ObjectId(request.form['_oid'])}, {'$pull': {'liked_posts': post_id}})
+            db.posts.update_one({'_id': post_id}, {'$inc': {'likes': -1}})
+            return jsonify({'message': 'Post descurtido com sucesso!', 'category': 'success'}, 200)
+        else:
+            db.students.update_one({'_id': ObjectId(request.form['_oid'])}, {'$push': {'liked_posts': post_id}})
+            db.posts.update_one({'_id': post_id}, {'$inc': {'likes': 1}})
+            return jsonify({'message': 'Post curtido com sucesso!', 'category': 'success'}, 200)
+
+
+@app.route('/news/<post_id>/views', methods=['POST'])
+def view_news(post_id):
+    if request.method == 'POST':
+        post = db.posts.find({'_id': post_id})
+        post['views'] += 1
+        return jsonify({'message': 'Post visualizado com sucesso!', 'category': 'success'}, 200)
 
 
 @app.route('/news/<post_id>/edit', methods=['GET', 'POST'])
