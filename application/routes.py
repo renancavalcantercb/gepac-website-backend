@@ -298,6 +298,7 @@ def add_news():
 @app.route('/news/<post_id>/like', methods=['POST'])
 def like_news(post_id):
     if request.method == 'POST':
+        print(request.form)
         student = db.students.find_one({'_id': ObjectId(request.form['student_id'])})
         if post_id in student['liked_posts']:
             db.students.update_one({'_id': ObjectId(request.form['_oid'])}, {'$pull': {'liked_posts': post_id}})
