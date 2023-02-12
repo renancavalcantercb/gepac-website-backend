@@ -298,7 +298,7 @@ def add_news():
 @app.route('/news/<post_id>/like', methods=['POST'])
 def like_news(post_id):
     if request.method == 'POST':
-        student = db.students.find_one({'_id': ObjectId(request.form['student_id'])})
+        student = db.stundents.find_one({'_id': ObjectId(request.form['student_id'])})
         if student is None:
             return jsonify({'message': 'Aluno não encontrado', 'category': 'danger'}, 400)
 
