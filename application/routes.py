@@ -128,7 +128,15 @@ def view_susbcribed(user_id):
         if student_info is None:
             return jsonify({'message': 'Aluno não encontrado', 'category': 'danger'}, 404)
 
-        return json.loads(json_util.dumps(student_info))
+        student_info_json = {
+            'name': student_info['name'],
+            'email': student_info['email'],
+            'cpf': student_info['cpf'],
+            'birthdate': student_info['birthdate'],
+            'phone': student_info['phone'],
+            'course': student_info['course']
+        }
+        return json.loads(json_util.dumps(student_info_json))
 
 
 @app.route('/subscribed/admin/<user_id>/edit', methods=['POST'])
