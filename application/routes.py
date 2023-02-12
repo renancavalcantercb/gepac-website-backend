@@ -58,7 +58,7 @@ def register_user():
             try:
                 db.stundents.insert_one(
                     {'name': name, 'email': email, 'password': generate_password_hash(password), 'cpf': cpf,
-                     'birthdate': birthdate, 'phone': phone, 'course': course, 'admin': False})
+                     'birthdate': birthdate, 'phone': phone, 'course': course})
                 flash_message = f'Usuário {email} cadastrado com sucesso!'
                 flash_category = 'success'
                 return jsonify({'message': flash_message, 'category': flash_category}, 200)
@@ -71,41 +71,6 @@ def register_user():
             flash(flash_message, category=flash_category)
 
         return jsonify({'message': error, 'category': 'danger'}, 400)
-
-
-@app.route('/login', methods=['POST'])
-def login():
-    if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
-        error = None
-
-        user = db.users.find_one({'email': email})
-        if user is None:
-            error = f'{email} não cadastrado.'
-            return jsonify({'message': error, 'category': 'danger'}, 404)
-
-        if error is None:
-            if check_password_hash(user['password'], password):
-                session['logged_in'] = True
-                session['name'] = user['name']
-                session['admin'] = user['admin']
-
-                payload = {
-                    'id': str(user['_id']),
-                    'name': user['name'],
-                    'email': user['email'],
-                    'admin': user['admin']
-                }
-
-                jwt_token = jwt.encode(payload, 'secret_key', algorithm='HS256')
-                return jsonify({'message': 'Usuário logado com sucesso!', 'category': 'success',
-                                'token': jwt_token}, 200)
-
-
-            else:
-                error = 'Usuário ou senha incorretos.'
-                return jsonify({'message': error, 'category': 'danger'}, 403)
 
 
 @app.route('/user/admin')
@@ -341,6 +306,38 @@ def edit_news(post_id):
 def delete_news(post_id):
     db.posts.delete_one({'_id': post_id})
     return jsonify({'message': 'Post deletado com sucesso!', 'category': 'success'}, 200)
+
+
+@app.route('/login', methods=['POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+        error = None
+
+        user = db.stundents.find_one({'email': email})
+        if user is None:
+            error = f'{email} não cadastrado.'
+            return jsonify({'message': error, 'category': 'danger'}, 404)
+
+        if error is None:
+            if check_password_hash(user['password'], password):
+                session['logged_in'] = True
+                session['name'] = user['name']
+
+                payload = {
+                    'id': str(user['_id']),
+                    'name': user['name'],
+                    'email': user['email']
+                }
+
+                jwt_token = jwt.encode(payload, 'secret_key', algorithm='HS256')
+                return jsonify({'message': 'Usuário logado com sucesso!', 'category': 'success',
+                                'token': jwt_token}, 200)
+
+            else:
+                error = 'Usuário ou senha incorretos.'
+                return jsonify({'message': error, 'category': 'danger'}, 403)
 
 
 @app.route('/logout', methods=['GET', 'POST'])
