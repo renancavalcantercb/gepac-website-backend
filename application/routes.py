@@ -298,16 +298,15 @@ def add_news():
 @app.route('/news/<post_id>/like', methods=['POST'])
 def like_news(post_id):
     if request.method == 'POST':
-        print(request.form)
         student = db.students.find_one({'_id': ObjectId(request.form['student_id'])})
-        if post_id in student['liked_posts']:
-            db.students.update_one({'_id': ObjectId(request.form['_oid'])}, {'$pull': {'liked_posts': post_id}})
-            db.posts.update_one({'_id': post_id}, {'$inc': {'likes': -1}})
-            return jsonify({'message': 'Post descurtido com sucesso!', 'category': 'success'}, 200)
-        else:
+        if post_id is not in student['liked_posts']:
             db.students.update_one({'_id': ObjectId(request.form['_oid'])}, {'$push': {'liked_posts': post_id}})
             db.posts.update_one({'_id': post_id}, {'$inc': {'likes': 1}})
             return jsonify({'message': 'Post curtido com sucesso!', 'category': 'success'}, 200)
+        else:
+            db.students.update_one({'_id': ObjectId(request.form['_oid'])}, {'$pull': {'liked_posts': post_id}})
+            db.posts.update_one({'_id': post_id}, {'$inc': {'likes': -1}})
+            return jsonify({'message': 'Post descurtido com sucesso!', 'category': 'success'}, 200)
 
 
 @app.route('/news/<post_id>/views', methods=['POST'])
