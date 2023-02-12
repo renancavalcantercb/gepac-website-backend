@@ -6,12 +6,12 @@
 - [X] Register System
 - [x] Login Page
 - [X] Login System
-- [ ] Post Register Page
-- [ ] Post Login Page
-- [ ] Copyright Footer
+- [x] Post Register Page
+- [x] Post Login Page
+- [x] Copyright Footer
 - [X] Like System
 - [X] View System
-- [ ] News API
+- [x] News API
 - [ ] Production
 - [ ] Astro Gallery
 
