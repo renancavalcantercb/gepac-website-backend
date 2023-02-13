@@ -298,16 +298,17 @@ def add_news():
 @app.route('/news/<post_id>/like', methods=['POST'])
 def like_news(post_id):
     if request.method == 'POST':
-        student = db.stundents.find_one({'_id': ObjectId(request.form['student_id'])})
+        student_id = request.form['student_id']
+        student = db.stundents.find_one({'_id': ObjectId(student_id)})
         if student is None:
             return jsonify({'message': 'Aluno não encontrado', 'category': 'danger'}, 400)
 
         if post_id not in student['liked_posts']:
-            db.students.update_one({'_id': ObjectId(request.form['_oid'])}, {'$push': {'liked_posts': post_id}})
+            db.students.update_one({'_id': ObjectId(student_id)}, {'$push': {'liked_posts': post_id}})
             db.posts.update_one({'_id': post_id}, {'$inc': {'likes': 1}})
             return jsonify({'message': 'Post curtido com sucesso!', 'category': 'success'}, 200)
         else:
-            db.students.update_one({'_id': ObjectId(request.form['_oid'])}, {'$pull': {'liked_posts': post_id}})
+            db.students.update_one({'_id': ObjectId(student_id)}, {'$pull': {'liked_posts': post_id}})
             db.posts.update_one({'_id': post_id}, {'$inc': {'likes': -1}})
             return jsonify({'message': 'Post descurtido com sucesso!', 'category': 'success'}, 200)
 
@@ -316,7 +317,8 @@ def like_news(post_id):
 def view_news(post_id):
     if request.method == 'POST':
         post = db.posts.find({'_id': post_id})
-        post['views'] += 1
+        view = post['views'] + 1
+        db.posts.update_one({'_id': post_id}, {'$set': {'views': view}})
         return jsonify({'message': 'Post visualizado com sucesso!', 'category': 'success'}, 200)
 
 
