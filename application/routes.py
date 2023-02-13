@@ -317,6 +317,9 @@ def like_news(post_id):
 def view_news(post_id):
     if request.method == 'POST':
         post = db.posts.find({'_id': post_id})
+        if post is None:
+            return jsonify({'message': 'Post não encontrado', 'category': 'danger'}, 400)
+        print(post)
         view = post['views'] + 1
         db.posts.update_one({'_id': post_id}, {'$set': {'views': view}})
         return jsonify({'message': 'Post visualizado com sucesso!', 'category': 'success'}, 200)
