@@ -316,13 +316,13 @@ def like_news(post_id):
 @app.route('/news/<post_id>/views', methods=['POST'])
 def view_news(post_id):
     if request.method == 'POST':
-        post = db.posts.find({'_id': post_id})
-        if post is None:
-            return jsonify({'message': 'Post não encontrado', 'category': 'danger'}, 400)
-        print(post)
-        view = post['views'] + 1
-        db.posts.update_one({'_id': post_id}, {'$set': {'views': view}})
-        return jsonify({'message': 'Post visualizado com sucesso!', 'category': 'success'}, 200)
+        post = db.posts.find_one({'_id': post_id})
+        if post:
+            views = post.get('views', 0) + 1
+            db.posts.update_one({'_id': post_id}, {'$set': {'views': views}})
+            return jsonify({'message': 'Post visualizado com sucesso!', 'category': 'success'}, 200)
+        else:
+            return jsonify({'message': 'Post não encontrado', 'category': 'error'}, 404)
 
 
 @app.route('/news/<post_id>/edit', methods=['GET', 'POST'])
